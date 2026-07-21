@@ -266,12 +266,16 @@ size_t OggDemuxer::Process(const uint8_t* data, size_t size)
                                 continue;  
                             }
                         }
-                        if (opus_info_.head_seen && opus_info_.tags_seen) {
+                        if (opus_info_.head_seen || opus_info_.tags_seen) {
                             if (on_demuxer_finished_) {
                                 on_demuxer_finished_(ctx_.packet_buf, opus_info_.sample_rate, ctx_.packet_len);
                             }
                         } else {
-                            ESP_LOGW(TAG, "当前Ogg容器未解析到OpusHead/OpusTags，丢弃");
+                            // Fallback: if header tags were missing, assume raw Opus stream and start decoding
+                            opus_info_.head_seen = true;
+                            if (on_demuxer_finished_) {
+                                on_demuxer_finished_(ctx_.packet_buf, opus_info_.sample_rate, ctx_.packet_len);
+                            }
                         }
                     }
                     ctx_.packet_len = 0;

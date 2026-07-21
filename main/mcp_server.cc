@@ -17,6 +17,7 @@
 #include "settings.h"
 #include "lvgl_theme.h"
 #include "lvgl_display.h"
+#include "local_music_player.h"
 
 #define TAG "MCP"
 
@@ -120,6 +121,37 @@ void McpServer::AddCommonTools() {
             });
     }
 #endif
+
+    AddTool("self.music.list",
+        "List all pre-installed local music/audio tracks stored on the Flash memory.",
+        PropertyList(),
+        [](const PropertyList& properties) -> ReturnValue {
+            auto tracks = LocalMusicPlayer::GetInstance().ListTracks();
+            cJSON* json_arr = cJSON_CreateArray();
+            for (const auto& track : tracks) {
+                cJSON_AddItemToArray(json_arr, cJSON_CreateString(track.c_str()));
+            }
+            return json_arr;
+        });
+
+    AddTool("self.music.play",
+        "Play a local music/audio track by filename from Flash memory.",
+        PropertyList({
+            Property("filename", kPropertyTypeString, "The name of the audio file to play")
+        }),
+        [](const PropertyList& properties) -> ReturnValue {
+            auto filename = properties["filename"].value<std::string>();
+            bool success = LocalMusicPlayer::GetInstance().PlayByName(filename);
+            return success;
+        });
+
+    AddTool("self.music.stop",
+        "Stop local music playback.",
+        PropertyList(),
+        [](const PropertyList& properties) -> ReturnValue {
+            LocalMusicPlayer::GetInstance().Stop();
+            return true;
+        });
 
     // Restore the original tools list to the end of the tools list
     tools_.insert(tools_.end(), original_tools.begin(), original_tools.end());

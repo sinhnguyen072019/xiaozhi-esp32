@@ -2,6 +2,8 @@
 set(SOURCES "audio/audio_codec.cc"
             "audio/audio_debugger.cc"
             "audio/audio_service.cc"
+            "audio/flash_storage.cc"
+            "audio/local_music_player.cc"
             "audio/demuxer/ogg_demuxer.cc"
             "audio/codecs/no_audio_codec.cc"
             "audio/codecs/box_audio_codec.cc"
@@ -40,7 +42,7 @@ set(SOURCES "audio/audio_codec.cc"
             "device_state_machine.cc"
             "assets.cc"
             "main.cc"
-            "font_roboto_light.c"
+            "font_inter_12.c"
             )
 
 set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "audio/demuxer" "protocols")
@@ -85,7 +87,7 @@ function(find_component_by_pattern PATTERN COMPONENT_VAR PATH_VAR)
 endfunction()
 
 # Set default BUILTIN_TEXT_FONT and BUILTIN_ICON_FONT
-set(BUILTIN_TEXT_FONT font_roboto_light)
+set(BUILTIN_TEXT_FONT font_inter_12)
 set(BUILTIN_ICON_FONT font_material_symbols_14_1)
 
 set(EMOTE_RESOLUTION "320_240")
@@ -94,7 +96,7 @@ set(EMOTE_RESOLUTION "320_240")
 # Set default assets if the board uses partition table V2
 if(CONFIG_BOARD_TYPE_BREAD_COMPACT_WIFI)
     set(BOARD_TYPE "bread-compact-wifi")
-    set(BUILTIN_TEXT_FONT font_roboto_light)
+    set(BUILTIN_TEXT_FONT font_inter_12)
     set(BUILTIN_ICON_FONT font_material_symbols_14_1)
 elseif(CONFIG_BOARD_TYPE_BREAD_COMPACT_ML307)
     set(BOARD_TYPE "bread-compact-ml307")
@@ -1085,7 +1087,7 @@ idf_component_register(SRCS ${SOURCES}
 if(NOT BOARD_NAME)
     set(BOARD_NAME ${BOARD_TYPE})
 endif()
-if("${BUILTIN_TEXT_FONT}" STREQUAL "font_roboto_light")
+if("${BUILTIN_TEXT_FONT}" STREQUAL "font_inter_12")
     set(TEXT_FONT_SIZE "12")
     set(TEXT_FONT_BPP "4")
 elseif("${BUILTIN_TEXT_FONT}" MATCHES "^font_noto_sans_basic_([0-9]+)_([0-9]+)$")
@@ -1103,7 +1105,7 @@ target_compile_definitions(${COMPONENT_LIB}
 # Add generation rules
 add_custom_command(
     OUTPUT ${LANG_HEADER}
-    COMMAND python ${PROJECT_DIR}/scripts/gen_lang.py
+    COMMAND ${PYTHON} ${PROJECT_DIR}/scripts/gen_lang.py
             --language "${LANG_DIR}"
             --output "${LANG_HEADER}"
     DEPENDS
@@ -1243,7 +1245,7 @@ function(build_default_assets_bin)
     # Create custom command to build assets
     add_custom_command(
         OUTPUT ${GENERATED_ASSETS_BIN}
-        COMMAND python ${PROJECT_DIR}/scripts/build_default_assets.py ${BUILD_ARGS}
+        COMMAND ${PYTHON} ${PROJECT_DIR}/scripts/build_default_assets.py ${BUILD_ARGS}
         DEPENDS ${DEFAULT_ASSETS_DEPENDENCIES}
         COMMENT "Building default assets.bin based on configuration"
         VERBATIM
@@ -1348,4 +1350,14 @@ if ("${size}" AND "${offset}")
     endif()
 else()
     message(STATUS "Assets partition not found, using v1 partition table")
+endif()
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/spiffs_image")
+    partition_table_get_partition_info(STORAGE_OFFSET "--partition-name storage" "offset")
+    if(STORAGE_OFFSET)
+        spiffs_create_partition_image(storage "${CMAKE_SOURCE_DIR}/spiffs_image" FLASH_IN_PROJECT SPIFFS_USE_MTIME OFF)
+        message(STATUS "Created SPIFFS image for 'storage' partition from spiffs_image/")
+    else()
+        message(WARNING "Partition 'storage' not found in active partition table!")
+    endif()
 endif()

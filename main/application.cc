@@ -10,6 +10,7 @@
 #include "system_info.h"
 #include "text_glyph_payload.h"
 #include "websocket_protocol.h"
+#include "local_music_player.h"
 
 #include <driver/gpio.h>
 #include <esp_log.h>
@@ -69,6 +70,8 @@ void Application::Initialize() {
     auto codec = board.GetAudioCodec();
     audio_service_.Initialize(codec);
     audio_service_.Start();
+
+    LocalMusicPlayer::GetInstance().Initialize(&audio_service_);
 
     AudioServiceCallbacks callbacks;
     callbacks.on_send_queue_available = [this]() {
@@ -809,6 +812,8 @@ void Application::HandleStopListeningEvent() {
 }
 
 void Application::HandleWakeWordDetectedEvent() {
+    LocalMusicPlayer::GetInstance().Stop();
+
     if (!protocol_) {
         return;
     }
