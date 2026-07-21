@@ -40,6 +40,7 @@ set(SOURCES "audio/audio_codec.cc"
             "device_state_machine.cc"
             "assets.cc"
             "main.cc"
+            "font_roboto_light.c"
             )
 
 set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "audio/demuxer" "protocols")
@@ -84,7 +85,7 @@ function(find_component_by_pattern PATTERN COMPONENT_VAR PATH_VAR)
 endfunction()
 
 # Set default BUILTIN_TEXT_FONT and BUILTIN_ICON_FONT
-set(BUILTIN_TEXT_FONT font_noto_sans_basic_14_1)
+set(BUILTIN_TEXT_FONT font_roboto_light)
 set(BUILTIN_ICON_FONT font_material_symbols_14_1)
 
 set(EMOTE_RESOLUTION "320_240")
@@ -93,7 +94,7 @@ set(EMOTE_RESOLUTION "320_240")
 # Set default assets if the board uses partition table V2
 if(CONFIG_BOARD_TYPE_BREAD_COMPACT_WIFI)
     set(BOARD_TYPE "bread-compact-wifi")
-    set(BUILTIN_TEXT_FONT font_noto_sans_basic_14_1)
+    set(BUILTIN_TEXT_FONT font_roboto_light)
     set(BUILTIN_ICON_FONT font_material_symbols_14_1)
 elseif(CONFIG_BOARD_TYPE_BREAD_COMPACT_ML307)
     set(BOARD_TYPE "bread-compact-ml307")
@@ -1084,12 +1085,15 @@ idf_component_register(SRCS ${SOURCES}
 if(NOT BOARD_NAME)
     set(BOARD_NAME ${BOARD_TYPE})
 endif()
-string(REGEX MATCH "^font_noto_sans_basic_([0-9]+)_([0-9]+)$" _font_match "${BUILTIN_TEXT_FONT}")
-if(NOT _font_match)
+if("${BUILTIN_TEXT_FONT}" STREQUAL "font_roboto_light")
+    set(TEXT_FONT_SIZE "12")
+    set(TEXT_FONT_BPP "4")
+elseif("${BUILTIN_TEXT_FONT}" MATCHES "^font_noto_sans_basic_([0-9]+)_([0-9]+)$")
+    set(TEXT_FONT_SIZE "${CMAKE_MATCH_1}")
+    set(TEXT_FONT_BPP "${CMAKE_MATCH_2}")
+else()
     message(FATAL_ERROR "Unsupported built-in text font name: ${BUILTIN_TEXT_FONT}")
 endif()
-set(TEXT_FONT_SIZE "${CMAKE_MATCH_1}")
-set(TEXT_FONT_BPP "${CMAKE_MATCH_2}")
 target_compile_definitions(${COMPONENT_LIB}
                     PRIVATE BOARD_TYPE=\"${BOARD_TYPE}\" BOARD_NAME=\"${BOARD_NAME}\"
                     PRIVATE BUILTIN_TEXT_FONT=${BUILTIN_TEXT_FONT} BUILTIN_ICON_FONT=${BUILTIN_ICON_FONT}

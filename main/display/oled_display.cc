@@ -324,19 +324,20 @@ void OledDisplay::SetupUI_128x32() {
 
     /* Emotion label on the left side */
     content_ = lv_obj_create(container_);
-    lv_obj_set_size(content_, 32, 32);
-    lv_obj_set_style_pad_all(content_, 0, 0);
-    lv_obj_set_style_border_width(content_, 0, 0);
-    lv_obj_set_style_radius(content_, 0, 0);
+    // lv_obj_set_size(content_, 32, 32);
+    lv_obj_set_size(content_, 0, 0);
+    // lv_obj_set_style_pad_all(content_, 0, 0);
+    // lv_obj_set_style_border_width(content_, 0, 0);
+    // lv_obj_set_style_radius(content_, 0, 0);
 
-    emotion_label_ = lv_label_create(content_);
-    lv_obj_set_style_text_font(emotion_label_, large_icon_font, 0);
-    lv_label_set_text(emotion_label_, MATERIAL_SYMBOLS_ROBOT_2);
-    lv_obj_center(emotion_label_);
+    // emotion_label_ = lv_label_create(content_);
+    // lv_obj_set_style_text_font(emotion_label_, large_icon_font, 0);
+    // lv_label_set_text(emotion_label_, MATERIAL_SYMBOLS_ROBOT_2);
+    // lv_obj_center(emotion_label_);
 
     /* Right side */
     side_bar_ = lv_obj_create(container_);
-    lv_obj_set_size(side_bar_, width_ - 32, 32);
+    lv_obj_set_size(side_bar_, width_, 32); //lv_obj_set_size(side_bar_, width_ - 32, 32);
     lv_obj_set_flex_flow(side_bar_, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_style_pad_all(side_bar_, 0, 0);
     lv_obj_set_style_border_width(side_bar_, 0, 0);
@@ -345,7 +346,7 @@ void OledDisplay::SetupUI_128x32() {
 
     /* Status bar */
     status_bar_ = lv_obj_create(side_bar_);
-    lv_obj_set_size(status_bar_, width_ - 32, 16);
+    lv_obj_set_size(status_bar_, width_, 16); //lv_obj_set_size(status_bar_, width_ - 32, 16);
     lv_obj_set_style_radius(status_bar_, 0, 0);
     lv_obj_set_flex_flow(status_bar_, LV_FLEX_FLOW_ROW);
     lv_obj_set_style_pad_all(status_bar_, 0, 0);
@@ -376,8 +377,8 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_text_font(battery_label_, icon_font, 0);
 
     chat_message_label_ = lv_label_create(side_bar_);
-    lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
-    lv_obj_set_style_pad_left(chat_message_label_, 2, 0);
+    lv_obj_set_size(chat_message_label_, width_, LV_SIZE_CONTENT); //lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
+    lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
     lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text(chat_message_label_, "");
 

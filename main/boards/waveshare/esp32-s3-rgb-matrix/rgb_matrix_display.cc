@@ -14,9 +14,11 @@
 #include "config.h"
 #include "emoji_collection.h"
 #include "hub75.h"
+#include "lvgl.h"
 
 // 声明中文字体
-LV_FONT_DECLARE(font_noto_sans_basic_14_1);
+LV_FONT_DECLARE(font_roboto_light);
+//LV_FONT_DECLARE(font_noto_sans_basic_14_1);
 LV_FONT_DECLARE(BUILTIN_ICON_FONT);
 LV_FONT_DECLARE(font_material_symbols_30_4);
 
@@ -296,7 +298,7 @@ void CustomMatrixDisplay::SetupUI() {
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_CLIP);
     lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_RIGHT, 0);
     lv_obj_set_style_text_color(status_label_, lv_color_white(), 0);
-    lv_obj_set_style_text_font(status_label_, &font_noto_sans_basic_14_1, 0);
+    lv_obj_set_style_text_font(status_label_, &font_roboto_light, 0);
     lv_obj_align(status_label_, LV_ALIGN_TOP_RIGHT, 0, -1);
     status_text_ = "初始化";
     RefreshStatusLabelLocked();
@@ -307,7 +309,7 @@ void CustomMatrixDisplay::SetupUI() {
     lv_label_set_long_mode(message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(message_label_, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_color(message_label_, lv_color_white(), 0);
-    lv_obj_set_style_text_font(message_label_, &font_noto_sans_basic_14_1, 0);
+    lv_obj_set_style_text_font(message_label_, &font_roboto_light, 0);
     lv_obj_align(message_label_, LV_ALIGN_BOTTOM_MID, 0, 0);
     lv_label_set_text(message_label_, "hi 小智");
 
