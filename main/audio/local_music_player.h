@@ -20,6 +20,7 @@ public:
     bool PlayByName(const std::string& filename);
     void Stop();
     bool IsPlaying() const { return is_playing_; }
+    void TogglePause() { is_paused_ = !is_paused_; }
     std::string GetCurrentTrack() const { return current_track_; }
 
     std::vector<std::string> ListTracks();
@@ -33,6 +34,7 @@ private:
 
     AudioService* audio_service_ = nullptr;
     std::atomic<bool> is_playing_{false};
+    std::atomic<bool> is_paused_{false};
     std::atomic<bool> stop_requested_{false};
     TaskHandle_t play_task_handle_ = nullptr;
     std::string current_track_;

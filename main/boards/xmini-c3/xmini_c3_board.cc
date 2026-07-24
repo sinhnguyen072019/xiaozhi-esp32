@@ -9,6 +9,7 @@
 #include "config.h"
 #include "power_save_timer.h"
 #include "press_to_talk_mcp_tool.h"
+#include "local_music_player.h"
 
 #include <esp_log.h>
 #include <esp_efuse_table.h>
@@ -148,6 +149,13 @@ private:
             if (!press_to_talk_tool_ || !press_to_talk_tool_->IsPressToTalkEnabled()) {
                 app.ToggleChatState();
             }
+        });
+        boot_button_.OnDoubleClick([this]() {
+            auto& app = Application::GetInstance();
+            if (app.GetDeviceState() == kDeviceStateStarting) {
+                return;
+            }
+            LocalMusicPlayer::GetInstance().TogglePause();
         });
         boot_button_.OnPressDown([this]() {
             if (power_save_timer_) {

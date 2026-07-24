@@ -233,14 +233,15 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_align(status_bar_, LV_ALIGN_TOP_MID, 0, 0);        // Overlap with top_bar_
 
     notification_label_ = lv_label_create(status_bar_);
-    lv_obj_set_width(notification_label_, LV_HOR_RES);
+    lv_obj_set_size(notification_label_, LV_HOR_RES * 0.7, 16);
+    lv_label_set_long_mode(notification_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(notification_label_, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(notification_label_, "");
     lv_obj_align(notification_label_, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
 
     status_label_ = lv_label_create(status_bar_);
-    lv_obj_set_width(status_label_, LV_HOR_RES);
+    lv_obj_set_size(status_label_, LV_HOR_RES * 0.7, 16);
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
@@ -309,7 +310,7 @@ void OledDisplay::SetupUI_128x32() {
     auto lvgl_theme = static_cast<LvglTheme*>(current_theme_);
     auto text_font = lvgl_theme->text_font()->font();
     auto icon_font = lvgl_theme->icon_font()->font();
-   // auto large_icon_font = lvgl_theme->large_icon_font()->font();
+    // auto large_icon_font = lvgl_theme->large_icon_font()->font();
 
     auto screen = lv_screen_active();
     lv_obj_set_style_text_font(screen, text_font, 0);
@@ -337,7 +338,7 @@ void OledDisplay::SetupUI_128x32() {
 
     /* Right side */
     side_bar_ = lv_obj_create(container_);
-    lv_obj_set_size(side_bar_, width_, 32); //lv_obj_set_size(side_bar_, width_ - 32, 32);
+    lv_obj_set_size(side_bar_, width_, 32);  // lv_obj_set_size(side_bar_, width_ - 32, 32);
     lv_obj_set_flex_flow(side_bar_, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_style_pad_all(side_bar_, 0, 0);
     lv_obj_set_style_border_width(side_bar_, 0, 0);
@@ -346,7 +347,7 @@ void OledDisplay::SetupUI_128x32() {
 
     /* Status bar */
     status_bar_ = lv_obj_create(side_bar_);
-    lv_obj_set_size(status_bar_, width_, 16); //lv_obj_set_size(status_bar_, width_ - 32, 16);
+    lv_obj_set_size(status_bar_, width_, 16);  // lv_obj_set_size(status_bar_, width_ - 32, 16);
     lv_obj_set_style_radius(status_bar_, 0, 0);
     lv_obj_set_flex_flow(status_bar_, LV_FLEX_FLOW_ROW);
     lv_obj_set_style_pad_all(status_bar_, 0, 0);
@@ -355,11 +356,15 @@ void OledDisplay::SetupUI_128x32() {
 
     status_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(status_label_, 1);
+    lv_obj_set_height(status_label_, 16);
+    lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_pad_left(status_label_, 2, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
 
     notification_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(notification_label_, 1);
+    lv_obj_set_height(notification_label_, 16);
+    lv_label_set_long_mode(notification_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_pad_left(notification_label_, 2, 0);
     lv_label_set_text(notification_label_, "");
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
@@ -377,7 +382,9 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_text_font(battery_label_, icon_font, 0);
 
     chat_message_label_ = lv_label_create(side_bar_);
-    lv_obj_set_size(chat_message_label_, width_, LV_SIZE_CONTENT); //lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
+    lv_obj_set_size(
+        chat_message_label_, width_,
+        LV_SIZE_CONTENT);  // lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
     lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text(chat_message_label_, "");
