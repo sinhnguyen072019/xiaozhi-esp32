@@ -1,6 +1,6 @@
 #include "flash_storage.h"
-#include <esp_spiffs.h>
 #include <esp_log.h>
+#include <esp_spiffs.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <algorithm>
@@ -20,22 +20,23 @@ esp_err_t FlashStorage::Initialize(const char* base_path, const char* partition_
     base_path_ = base_path ? base_path : "/storage";
     partition_label_ = partition_label ? partition_label : "storage";
 
-    esp_vfs_spiffs_conf_t conf = {
-        .base_path = base_path_.c_str(),
-        .partition_label = partition_label_.c_str(),
-        .max_files = 5,
-        .format_if_mount_failed = true
-    };
+    esp_vfs_spiffs_conf_t conf = {.base_path = base_path_.c_str(),
+                                  .partition_label = partition_label_.c_str(),
+                                  .max_files = 5,
+                                  .format_if_mount_failed = true};
 
     esp_err_t ret = esp_vfs_spiffs_register(&conf);
     if (ret == ESP_OK) {
         mounted_ = true;
         size_t total = 0, used = 0;
         esp_spiffs_info(partition_label_.c_str(), &total, &used);
-        ESP_LOGI(TAG, "SPIFFS mounted successfully at %s (partition: %s). Total: %u KB, Used: %u KB",
-                 base_path_.c_str(), partition_label_.c_str(), (unsigned)(total / 1024), (unsigned)(used / 1024));
+        ESP_LOGI(TAG,
+                 "SPIFFS mounted successfully at %s (partition: %s). Total: %u KB, Used: %u KB",
+                 base_path_.c_str(), partition_label_.c_str(), (unsigned)(total / 1024),
+                 (unsigned)(used / 1024));
     } else {
-        ESP_LOGE(TAG, "Failed to initialize SPIFFS on partition '%s' (0x%x)", partition_label_.c_str(), ret);
+        ESP_LOGE(TAG, "Failed to initialize SPIFFS on partition '%s' (0x%x)",
+                 partition_label_.c_str(), ret);
     }
 
     return ret;
@@ -60,7 +61,8 @@ std::vector<std::string> FlashStorage::ListFiles(const std::string& extension) {
             files.push_back(filename);
         } else {
             if (filename.length() >= extension.length() &&
-                filename.compare(filename.length() - extension.length(), extension.length(), extension) == 0) {
+                filename.compare(filename.length() - extension.length(), extension.length(),
+                                 extension) == 0) {
                 files.push_back(filename);
             }
         }

@@ -39,6 +39,7 @@ bool LocalMusicPlayer::PlayFile(const std::string& filepath) {
     std::lock_guard<std::mutex> lock(mutex_);
     current_track_ = filepath;
     stop_requested_ = false;
+    is_paused_ = false;
 
     BaseType_t ret = xTaskCreate(PlaybackTask, "local_play_task", 6144, this, 5, &play_task_handle_);
     if (ret != pdPASS) {
@@ -93,6 +94,11 @@ void LocalMusicPlayer::RunPlayback(const std::string& filepath) {
 
     uint8_t buffer[1024];
     while (!stop_requested_) {
+        if (is_paused_) {
+            vTaskDelay(pdMS_TO_TICKS(100));
+            continue;
+        }
+
         size_t bytes_read = fread(buffer, 1, sizeof(buffer), file);
         if (bytes_read == 0) {
             break;
