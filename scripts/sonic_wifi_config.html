@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>小智声波配网</title>
+  <title>XiaoZhi Acoustic Config</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -18,12 +18,44 @@
       padding: 2rem 1.5rem;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      max-width: 400px;
+      max-width: 500px;
       width: 100%;
     }
     h2 {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e0e0e0;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.8rem;
+      text-align: center;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #666;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #4a90e2;
+    }
+    .tab-btn.active {
+      color: #4a90e2;
+      border-bottom: 2px solid #4a90e2;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
     }
     label {
       font-weight: bold;
@@ -31,7 +63,8 @@
       margin: 1rem 0 0.3rem;
     }
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="number"] {
       width: 100%;
       padding: 0.75rem;
       font-size: 1rem;
@@ -43,50 +76,125 @@
       margin-right: 0.5rem;
     }
     .checkbox-container {
-      margin-top: 1rem;
+      margin: 1rem 0;
       font-size: 0.95rem;
     }
-    button {
+    .btn {
       width: 100%;
-      margin-top: 1rem;
+      margin-top: 0.75rem;
       padding: 0.8rem;
       font-size: 1rem;
       border: none;
       border-radius: 8px;
-      background-color: #4a90e2;
-      color: #fff;
       cursor: pointer;
       transition: background-color 0.2s;
+      color: #fff;
+      font-weight: 500;
     }
-    button:hover {
+    .btn-primary {
+      background-color: #4a90e2;
+    }
+    .btn-primary:hover {
       background-color: #357ab8;
     }
-    button:active {
-      background-color: #2f6ea2;
+    .btn-secondary {
+      background-color: #7f8c8d;
     }
-    audio {
-      margin-top: 1.5rem;
-      width: 100%;
-      outline: none;
+    .btn-secondary:hover {
+      background-color: #636e72;
+    }
+    .day-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      align-items: center;
+    }
+    .day-row input[type="number"].row-month {
+      width: 75px;
+    }
+    .day-row input[type="number"].row-day {
+      width: 75px;
+    }
+    .day-row input[type="text"].row-greeting {
+      flex: 1;
+    }
+    .btn-remove {
+      background: #ff4d4f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 0.8rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-remove:hover {
+      background: #d9363e;
+    }
+    .btn-add {
+      background: #52c41a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      margin: 0.5rem 0 1rem 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+    .btn-add:hover {
+      background: #3fa214;
+    }
+    .helper-text {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>📶 小智声波配网</h2>
-    <label for="ssid">WiFi 名称</label>
-    <input id="ssid" type="text" value="" placeholder="请输入 WiFi 名称" />
-
-    <label for="pwd">WiFi 密码</label>
-    <input id="pwd" type="password" value="" placeholder="请输入 WiFi 密码" />
-
-    <div class="checkbox-container">
-      <label><input type="checkbox" id="loopCheck" checked /> 自动循环播放声波</label>
+    <h2>📶 XiaoZhi Acoustic Config</h2>
+    
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('wifi', this)">📶 Wi-Fi Setup</button>
+      <button class="tab-btn" onclick="switchTab('days', this)">🗓️ Special Days</button>
     </div>
 
-    <button onclick="generate()">🎵 生成并播放声波</button>
-    <button onclick="stopPlay()">⏹️ 停止播放</button>
-    <audio id="player" controls></audio>
+    <!-- Tab 1: Wi-Fi Setup -->
+    <div id="tab-wifi" class="tab-content active">
+      <label for="ssid">Wi-Fi SSID</label>
+      <input id="ssid" type="text" value="" placeholder="Enter Wi-Fi SSID" />
+
+      <label for="pwd">Wi-Fi Password</label>
+      <input id="pwd" type="password" value="" placeholder="Enter Wi-Fi Password" />
+
+      <div class="checkbox-container">
+        <label><input type="checkbox" id="loopCheckWifi" checked /> Loop audio playback automatically</label>
+      </div>
+
+      <button class="btn btn-primary" onclick="generateWifi()">🎵 Generate & Play Wi-Fi Audio</button>
+      <button class="btn btn-secondary" onclick="stopPlay()">⏹️ Stop Playback</button>
+    </div>
+
+    <!-- Tab 2: Special Days -->
+    <div id="tab-days" class="tab-content">
+      <div class="helper-text">Add custom special days and greetings. These will be saved to your device's memory.</div>
+      <div id="special-days-list">
+        <!-- Dynamic rows inserted by JS -->
+      </div>
+      <button class="btn-add" onclick="addDayRow('', '', '')">+ Add Another Day</button>
+
+      <div class="checkbox-container">
+        <label><input type="checkbox" id="loopCheckDays" checked /> Loop audio playback automatically</label>
+      </div>
+
+      <button class="btn btn-primary" onclick="generateSpecialDays()">🎵 Generate & Play Special Days Audio</button>
+      <button class="btn btn-secondary" onclick="stopPlay()">⏹️ Stop Playback</button>
+    </div>
+
+    <!-- Hidden audio element without controls -->
+    <audio id="player" style="display: none;"></audio>
   </div>
 
   <script>
@@ -96,7 +204,6 @@
     const BIT_RATE = 100;
     const START_BYTES = [0x01, 0x02];
     const END_BYTES = [0x03, 0x04];
-    let loopTimer = null;
 
     function checksum(data) {
       return data.reduce((sum, b) => (sum + b) & 0xff, 0);
@@ -169,11 +276,69 @@
       return new Blob([wavHeader, pcm], { type: 'audio/wav' });
     }
 
-    function generate() {
+    function switchTab(tabId, btnElem) {
+      stopPlay();
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      
+      btnElem.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function addDayRow(month = '', day = '', greeting = '') {
+      const list = document.getElementById('special-days-list');
+      const row = document.createElement('div');
+      row.className = 'day-row';
+      row.innerHTML = `
+        <input type="number" class="row-month" min="1" max="12" placeholder="Mo" value="${month}" title="Month (1-12)" />
+        <input type="number" class="row-day" min="1" max="31" placeholder="Day" value="${day}" title="Day (1-31)" />
+        <input type="text" class="row-greeting" placeholder="Greeting (e.g. Happy Birthday!)" value="${greeting}" />
+        <button class="btn-remove" onclick="this.parentElement.remove()" title="Remove row">🗑️</button>
+      `;
+      list.appendChild(row);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      addDayRow(6, 24, " ^ ^ ");
+      addDayRow();
+    });
+
+    function generateWifi() {
       stopPlay();
       const ssid = document.getElementById('ssid').value.trim();
       const pwd = document.getElementById('pwd').value.trim();
+      if (!ssid) {
+        alert("Please enter a Wi-Fi SSID.");
+        return;
+      }
       const dataStr = ssid + '\n' + pwd;
+      playAudioData(dataStr, document.getElementById('loopCheckWifi').checked);
+    }
+
+    function generateSpecialDays() {
+      stopPlay();
+      const rows = document.querySelectorAll('.day-row');
+      let items = [];
+      rows.forEach(row => {
+        const m = parseInt(row.querySelector('.row-month').value.trim(), 10);
+        const d = parseInt(row.querySelector('.row-day').value.trim(), 10);
+        const g = row.querySelector('.row-greeting').value.trim().replace(/\|/g, ' ').replace(/\n/g, ' ');
+        if (!isNaN(m) && !isNaN(d) && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          items.push((m - 1) + ',' + d + ',' + g);
+        }
+      });
+
+      if (items.length === 0) {
+        alert("Please enter at least one valid Special Day (Month: 1-12, Day: 1-31).");
+        return;
+      }
+
+      // __SPECIAL_DAYS__ as SSID, empty password, followed by line 3 with the items list
+      const dataStr = "__SPECIAL_DAYS__\n\n" + items.join('|');
+      playAudioData(dataStr, document.getElementById('loopCheckDays').checked);
+    }
+
+    function playAudioData(dataStr, isLoop) {
       const textBytes = Array.from(new TextEncoder().encode(dataStr));
       const fullBytes = [...START_BYTES, ...textBytes, checksum(textBytes), ...END_BYTES];
 
@@ -189,11 +354,10 @@
       audio.load();
       audio.play();
 
-      // 修改了这里：使用 'ended' 事件来实现循环播放
-      if (document.getElementById('loopCheck').checked) {
+      if (isLoop) {
         audio.onended = function() {
-          audio.currentTime = 0;  // 从头开始
-          audio.play();           // 重新播放
+          audio.currentTime = 0;  // Restart from beginning
+          audio.play();           // Replay
         };
       }
     }
@@ -201,7 +365,7 @@
     function stopPlay() {
       const audio = document.getElementById('player');
       audio.pause();
-      audio.onended = null;  // 清除事件监听
+      audio.onended = null;  // Clear event listener
     }
   </script>
 </body>

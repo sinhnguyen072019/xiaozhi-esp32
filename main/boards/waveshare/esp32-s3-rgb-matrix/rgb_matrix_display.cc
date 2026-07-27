@@ -411,12 +411,10 @@ void CustomMatrixDisplay::UpdateStatusBar(bool update_all) {
     }
 
     char buf[64]{0};
+    std::string custom_greeting_str;
     const char* greeting = nullptr;
-    for (int i = 0; i < NUM_SPECIAL_DAYS; ++i) {
-        if (timeinfo.tm_mon == SPECIAL_DAYS[i].month && timeinfo.tm_mday == SPECIAL_DAYS[i].day) {
-            greeting = SPECIAL_DAYS[i].greeting;
-            break;
-        }
+    if (GetSpecialDayGreeting(timeinfo.tm_mon, timeinfo.tm_mday, custom_greeting_str)) {
+        greeting = custom_greeting_str.c_str();
     }
     
     if (greeting != nullptr) {

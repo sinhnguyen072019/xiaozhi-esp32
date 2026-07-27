@@ -220,12 +220,10 @@ void LvglDisplay::UpdateStatusBar(bool update_all) {
             struct tm* tm = localtime(&now);
             if (tm->tm_year >= 2025 - 1900) {
                 char time_str[64];
+                std::string custom_greeting_str;
                 const char* greeting = nullptr;
-                for (int i = 0; i < NUM_SPECIAL_DAYS; ++i) {
-                    if (tm->tm_mon == SPECIAL_DAYS[i].month && tm->tm_mday == SPECIAL_DAYS[i].day) {
-                        greeting = SPECIAL_DAYS[i].greeting;
-                        break;
-                    }
+                if (GetSpecialDayGreeting(tm->tm_mon, tm->tm_mday, custom_greeting_str)) {
+                    greeting = custom_greeting_str.c_str();
                 }
                 
                 float s_temp = 0.0f;
