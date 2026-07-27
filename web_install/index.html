@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install XiaoZhi</title>
+    <style>
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .qr-section img {
+            max-width: 150px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Install XiaoZhi Firmware</h1>
+        <p>Connect your ESP32 device to your computer via USB and click the button below to install the firmware.</p>
+        <p><em>Note: This requires a Web Serial API compatible browser (like Chrome or Edge).</em></p>
+        <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+        <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+
+        <div class="qr-section">
+            <h3>Wi-Fi Configuration</h3>
+            <p>Scan this QR code with your phone to quickly connect to the Wi-Fi network:</p>
+            <!-- QR code generated for WIFI:S:MatTroiNho-3D5D;T:WPA;P:;; -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WIFI%3AS%3AMatTroiNho-2269%3BT%3AWPA%3BP%3A%3B%3B"
+                alt="Wi-Fi QR Code for MatTroiNho-3D5D" />
+            <p><strong>SSID:</strong> MatTroiNho-2269</p>
+        </div>
+    </div>
+</body>
+
+</html>

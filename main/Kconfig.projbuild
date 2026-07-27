@@ -6,6 +6,13 @@ config OTA_URL
     help
         The application will access this URL to check for new firmwares and server address.
 
+config ENABLE_AUTO_OTA_UPGRADE
+    bool "Enable Automatic OTA Firmware Upgrade"
+    default n
+    help
+        If enabled, the device will automatically download and install new firmware versions on boot.
+        Set to n (disabled by default) to prevent overriding custom firmware builds.
+
 choice
     prompt "Flash Assets"
     default FLASH_DEFAULT_ASSETS if !USE_EMOTE_MESSAGE_STYLE
@@ -804,7 +811,6 @@ config USE_MULTILINE_CHAT_MESSAGE
 
 choice WAKE_WORD_TYPE
     prompt "Wake Word Implementation Type"
-    default USE_AFE_WAKE_WORD if (IDF_TARGET_ESP32S3 || IDF_TARGET_ESP32P4) && SPIRAM
     default WAKE_WORD_DISABLED
     help
         Choose the type of wake word implementation to use
@@ -1041,6 +1047,15 @@ menu "TAIJIPAI_S3_CONFIG"
     default y
     help
         启动双声道
+endmenu
+menu "Sensor Configuration"
+    config DHT11_SENSOR_PIN
+        int "DHT11 Sensor Data Pin (GPIO)"
+        range -1 48
+        default -1
+        help
+            GPIO pin number connected to the DATA pin of the DHT11 sensor.
+            Set to -1 to disable DHT11 sensor reading.
 endmenu
 
 endmenu

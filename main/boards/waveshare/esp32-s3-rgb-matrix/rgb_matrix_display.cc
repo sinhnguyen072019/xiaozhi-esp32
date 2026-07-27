@@ -15,6 +15,7 @@
 #include "emoji_collection.h"
 #include "hub75.h"
 #include "lvgl.h"
+#include "special_days.h"
 
 // 声明中文字体
 LV_FONT_DECLARE(font_inter_12);
@@ -295,7 +296,7 @@ void CustomMatrixDisplay::SetupUI() {
     // 右上角：状态文本 + 时间
     status_label_ = lv_label_create(main_container_);
     lv_obj_set_size(status_label_, ui_width_px - 16, 16);
-    lv_label_set_long_mode(status_label_, LV_LABEL_LONG_CLIP);
+    lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_RIGHT, 0);
     lv_obj_set_style_text_color(status_label_, lv_color_white(), 0);
     lv_obj_set_style_text_font(status_label_, &font_inter_12, 0);
@@ -409,8 +410,18 @@ void CustomMatrixDisplay::UpdateStatusBar(bool update_all) {
         return;
     }
 
-    char buf[6]{0};
-    snprintf(buf, sizeof(buf), "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+    char buf[64]{0};
+    std::string custom_greeting_str;
+    const char* greeting = nullptr;
+    if (GetSpecialDayGreeting(timeinfo.tm_mon, timeinfo.tm_mday, custom_greeting_str)) {
+        greeting = custom_greeting_str.c_str();
+    }
+    
+    if (greeting != nullptr) {
+        snprintf(buf, sizeof(buf), "%02d:%02d %s", timeinfo.tm_hour, timeinfo.tm_min, greeting);
+    } else {
+        snprintf(buf, sizeof(buf), "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+    }
 
     const bool idle = app.GetDeviceState() == kDeviceStateIdle;
     if (idle) {

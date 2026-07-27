@@ -4,13 +4,13 @@
 #include "audio_codec.h"
 #include "board.h"
 #include "display.h"
+#include "local_music_player.h"
 #include "mcp_server.h"
 #include "mqtt_protocol.h"
 #include "settings.h"
 #include "system_info.h"
 #include "text_glyph_payload.h"
 #include "websocket_protocol.h"
-#include "local_music_player.h"
 
 #include <driver/gpio.h>
 #include <esp_log.h>
@@ -458,10 +458,14 @@ void Application::CheckNewVersion() {
         retry_delay = 10;  // Reset retry delay
 
         if (ota_->HasNewVersion()) {
+#ifdef CONFIG_ENABLE_AUTO_OTA_UPGRADE
             if (UpgradeFirmware(ota_->GetFirmwareUrl(), ota_->GetFirmwareVersion())) {
                 return;  // This line will never be reached after reboot
             }
-            // If upgrade failed, continue to normal operation
+#else
+            ESP_LOGI(TAG, "New firmware version available (%s), but automatic OTA upgrade is disabled.", ota_->GetFirmwareVersion().c_str());
+#endif
+            // If upgrade failed or disabled, continue to normal operation
         }
 
         // No new version, mark the current version as valid

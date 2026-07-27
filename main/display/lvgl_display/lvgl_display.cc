@@ -14,6 +14,7 @@
 #include "lvgl_display.h"
 #include "lvgl_theme.h"
 #include "settings.h"
+#include "special_days.h"
 
 #define TAG "Display"
 
@@ -217,10 +218,30 @@ void LvglDisplay::UpdateStatusBar(bool update_all) {
             // Set status to clock "HH:MM - DD/MM"
             time_t now = time(NULL);
             struct tm* tm = localtime(&now);
-            // Check if the we have already set the time
             if (tm->tm_year >= 2025 - 1900) {
-                char time_str[16];
-                strftime(time_str, sizeof(time_str), "%H:%M - %d/%m", tm);
+                char time_str[64];
+                std::string custom_greeting_str;
+                const char* greeting = nullptr;
+                if (GetSpecialDayGreeting(tm->tm_mon, tm->tm_mday, custom_greeting_str)) {
+                    greeting = custom_greeting_str.c_str();
+                }
+                
+                float s_temp = 0.0f;
+                float s_hum = 0.0f;
+                char sensor_suffix[32] = "";
+                if (board.GetSensorData(s_temp, s_hum)) {
+                    snprintf(sensor_suffix, sizeof(sensor_suffix), "  %.1f°C %.0f%%", s_temp, s_hum);
+                }
+
+                if (greeting != nullptr) {
+                    char temp[16];
+                    strftime(temp, sizeof(temp), "%H:%M - %d/%m", tm);
+                    snprintf(time_str, sizeof(time_str), "%s - %s%s", temp, greeting, sensor_suffix);
+                } else {
+                    char temp[32];
+                    strftime(temp, sizeof(temp), "%H:%M - %d/%m", tm);
+                    snprintf(time_str, sizeof(time_str), "%s%s", temp, sensor_suffix);
+                }
                 SetStatus(time_str);
             } else {
                 ESP_LOGW(TAG, "System time is not set, tm_year: %d", tm->tm_year);
@@ -256,6 +277,18 @@ void LvglDisplay::UpdateStatusBar(bool update_all) {
         if (battery_label_ != nullptr && battery_icon_ != icon) {
             battery_icon_ = icon;
             lv_label_set_text(battery_label_, battery_icon_);
+        }
+        
+        if (sensor_label_ != nullptr) {
+            float temp = 0.0f;
+            float hum = 0.0f;
+            if (board.GetSensorData(temp, hum)) {
+                char sensor_str[32];
+                snprintf(sensor_str, sizeof(sensor_str), "%.1f°C %.0f%%", temp, hum);
+                lv_label_set_text(sensor_label_, sensor_str);
+            } else {
+                lv_label_set_text(sensor_label_, "");
+            }
         }
 
         // Check low battery popup only when clock tick event is triggered

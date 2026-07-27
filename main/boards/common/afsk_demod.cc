@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "display.h"
 #include "ssid_manager.h"
+#include "settings.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -79,22 +80,39 @@ namespace audio_wifi_config
                     ESP_LOGI(kLogTag, "Received text data: %s", data_buffer.decoded_text->c_str());
                     display->SetChatMessage("system", data_buffer.decoded_text->c_str());
                     
-                    // Split SSID and password by newline character
+                    // Split SSID, password and optional special day info by newline character
                     std::string wifi_ssid, wifi_password;
                     size_t newline_position = data_buffer.decoded_text->find('\n');
                     if (newline_position != std::string::npos) {
                         wifi_ssid = data_buffer.decoded_text->substr(0, newline_position);
-                        wifi_password = data_buffer.decoded_text->substr(newline_position + 1);
-                        ESP_LOGI(kLogTag, "WiFi SSID: %s, Password: %s", wifi_ssid.c_str(), wifi_password.c_str());
+                        std::string rest = data_buffer.decoded_text->substr(newline_position + 1);
+                        size_t second_newline = rest.find('\n');
+                        std::string special_days_info;
+                        if (second_newline != std::string::npos) {
+                            wifi_password = rest.substr(0, second_newline);
+                            special_days_info = rest.substr(second_newline + 1);
+                        } else {
+                            wifi_password = rest;
+                        }
+
+                        if (!special_days_info.empty()) {
+                            Settings settings("special_days", true);
+                            settings.SetString("list", special_days_info);
+                            ESP_LOGI(kLogTag, "Saved custom special days list: %s", special_days_info.c_str());
+                        }
+
+                        if (wifi_ssid != "__SPECIAL_DAYS__" && !wifi_ssid.empty()) {
+                            // Save WiFi credentials using SsidManager
+                            auto& ssid_manager = SsidManager::GetInstance();
+                            ssid_manager.AddSsid(wifi_ssid, wifi_password);
+                            ESP_LOGI(kLogTag, "WiFi credentials saved successfully (SSID: %s)", wifi_ssid.c_str());
+                        } else {
+                            ESP_LOGI(kLogTag, "Special days configured without modifying WiFi credentials");
+                        }
                     } else {
                         ESP_LOGE(kLogTag, "Invalid data format, no newline character found");
                         continue;
                     }
-                    
-                    // Save WiFi credentials using SsidManager
-                    auto& ssid_manager = SsidManager::GetInstance();
-                    ssid_manager.AddSsid(wifi_ssid, wifi_password);
-                    ESP_LOGI(kLogTag, "WiFi credentials saved successfully");
                     
                     // Exit config mode (triggers ConfigModeExit event)
                     wifi_manager->StopConfigAp();

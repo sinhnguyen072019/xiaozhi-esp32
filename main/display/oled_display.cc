@@ -221,6 +221,10 @@ void OledDisplay::SetupUI_128x64() {
     lv_label_set_text(battery_label_, "");
     lv_obj_set_style_text_font(battery_label_, icon_font, 0);
 
+    sensor_label_ = lv_label_create(right_icons);
+    lv_label_set_text(sensor_label_, "");
+    lv_obj_set_style_text_font(sensor_label_, text_font, 0);
+
     /* Layer 2: Status bar - for center text labels */
     status_bar_ = lv_obj_create(screen);
     lv_obj_set_size(status_bar_, LV_HOR_RES, 16);
@@ -380,6 +384,10 @@ void OledDisplay::SetupUI_128x32() {
     battery_label_ = lv_label_create(status_bar_);
     lv_label_set_text(battery_label_, "");
     lv_obj_set_style_text_font(battery_label_, icon_font, 0);
+
+    sensor_label_ = lv_label_create(status_bar_);
+    lv_label_set_text(sensor_label_, "");
+    lv_obj_set_style_text_font(sensor_label_, text_font, 0);
 
     chat_message_label_ = lv_label_create(side_bar_);
     lv_obj_set_size(
