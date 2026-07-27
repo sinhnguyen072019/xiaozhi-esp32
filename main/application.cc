@@ -3,14 +3,15 @@
 #include "assets/lang_config.h"
 #include "audio_codec.h"
 #include "board.h"
+#include "console_chat.h"
 #include "display.h"
+#include "local_music_player.h"
 #include "mcp_server.h"
 #include "mqtt_protocol.h"
 #include "settings.h"
 #include "system_info.h"
 #include "text_glyph_payload.h"
 #include "websocket_protocol.h"
-#include "local_music_player.h"
 
 #include <driver/gpio.h>
 #include <esp_log.h>
@@ -100,6 +101,9 @@ void Application::Initialize() {
     auto& mcp_server = McpServer::GetInstance();
     mcp_server.AddCommonTools();
     mcp_server.AddUserOnlyTools();
+
+    // Start console chat over USB Type-C / UART
+    ConsoleChat::GetInstance().Start();
 
     // Set network event callback for UI updates and network state handling
     board.SetNetworkEventCallback([this](NetworkEvent event, const std::string& data) {
@@ -1120,6 +1124,40 @@ void Application::WakeWordInvoke(const std::string& wake_word) {
             }
         });
     }
+}
+
+void Application::SendTextMessage(const std::string& text) {
+    if (!protocol_) {
+        ESP_LOGW(TAG, "Cannot send text message: protocol not initialized");
+        return;
+    }
+
+    // Schedule on main task to ensure thread safety
+    Schedule([this, text]() {
+        if (!protocol_) {
+            return;
+        }
+
+        auto& board = Board::GetInstance();
+        board.SetPowerSaveLevel(PowerSaveLevel::PERFORMANCE);
+
+        if (!protocol_->IsAudioChannelOpened()) {
+            if (!protocol_->OpenAudioChannel()) {
+                ESP_LOGE(TAG, "Failed to open audio channel for text message");
+                SetDeviceState(kDeviceStateIdle);
+                return;
+            }
+        }
+
+        auto display = board.GetDisplay();
+        if (display) {
+            display->SetChatMessage("user", text.c_str());
+        }
+
+        ESP_LOGI(TAG, "Sending text message to AI: %s", text.c_str());
+        protocol_->SendChatText(text);
+        SetListeningMode(GetDefaultListeningMode());
+    });
 }
 
 bool Application::CanEnterSleepMode() {
