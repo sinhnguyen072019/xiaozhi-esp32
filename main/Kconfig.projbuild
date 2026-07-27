@@ -6,6 +6,13 @@ config OTA_URL
     help
         The application will access this URL to check for new firmwares and server address.
 
+config ENABLE_AUTO_OTA_UPGRADE
+    bool "Enable Automatic OTA Firmware Upgrade"
+    default n
+    help
+        If enabled, the device will automatically download and install new firmware versions on boot.
+        Set to n (disabled by default) to prevent overriding custom firmware builds.
+
 choice
     prompt "Flash Assets"
     default FLASH_DEFAULT_ASSETS if !USE_EMOTE_MESSAGE_STYLE
