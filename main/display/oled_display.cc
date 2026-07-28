@@ -353,18 +353,19 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_pad_all(status_bar_, 0, 0);
     lv_obj_set_style_border_width(status_bar_, 0, 0);
     lv_obj_set_style_pad_column(status_bar_, 0, 0);
+    lv_obj_set_scrollbar_mode(status_bar_, LV_SCROLLBAR_MODE_OFF);
 
     status_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(status_label_, 1);
     lv_obj_set_height(status_label_, 16);
-    lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    // lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL);
     lv_obj_set_style_pad_left(status_label_, 2, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
 
     notification_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(notification_label_, 1);
     lv_obj_set_height(notification_label_, 16);
-    lv_label_set_long_mode(notification_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    // lv_label_set_long_mode(notification_label_, LV_LABEL_LONG_SCROLL);
     lv_obj_set_style_pad_left(notification_label_, 2, 0);
     lv_label_set_text(notification_label_, "");
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
@@ -386,7 +387,7 @@ void OledDisplay::SetupUI_128x32() {
         chat_message_label_, width_,
         LV_SIZE_CONTENT);  // lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
-    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
     lv_label_set_text(chat_message_label_, "");
 
     // Start scrolling subtitle after a delay
