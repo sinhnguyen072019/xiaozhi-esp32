@@ -249,7 +249,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
 
     status_label_ = lv_label_create(status_bar_);
-    lv_obj_set_size(status_label_, LV_HOR_RES * 0.7, 16);
+    lv_obj_set_width(status_label_, LV_HOR_RES * 0.7);
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
@@ -288,7 +288,7 @@ void OledDisplay::SetupUI_128x64() {
 
     chat_message_label_ = lv_label_create(content_right_);
     lv_label_set_text(chat_message_label_, "");
-    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_WRAP);
     lv_obj_set_style_text_align(chat_message_label_, LV_TEXT_ALIGN_LEFT, 0);
     lv_obj_set_size(chat_message_label_, width_ - 32, 48);
     lv_obj_set_style_pad_top(chat_message_label_, 14, 0);
@@ -364,7 +364,6 @@ void OledDisplay::SetupUI_128x32() {
 
     status_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(status_label_, 1);
-    lv_obj_set_height(status_label_, 16);
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_pad_left(status_label_, 2, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
@@ -396,7 +395,7 @@ void OledDisplay::SetupUI_128x32() {
     chat_message_label_ = lv_label_create(side_bar_);
     lv_obj_set_size(chat_message_label_, width_, 16);
     lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
-    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_WRAP);
     lv_label_set_text(chat_message_label_, "");
 }
 
