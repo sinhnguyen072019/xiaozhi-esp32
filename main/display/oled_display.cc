@@ -249,8 +249,8 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
 
     status_label_ = lv_label_create(status_bar_);
-    lv_obj_set_width(status_label_, LV_HOR_RES * 0.7);
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_set_size(status_label_, LV_HOR_RES * 0.7, 20);
     lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_CENTER, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
     lv_obj_align(status_label_, LV_ALIGN_CENTER, 0, 0);
@@ -363,8 +363,9 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_remove_flag(status_bar_, LV_OBJ_FLAG_SCROLLABLE);
 
     status_label_ = lv_label_create(status_bar_);
-    lv_obj_set_flex_grow(status_label_, 1);
     lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_set_height(status_label_, 20);
+    lv_obj_set_flex_grow(status_label_, 1);
     lv_obj_set_style_pad_left(status_label_, 2, 0);
     lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
 
