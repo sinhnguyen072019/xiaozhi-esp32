@@ -187,6 +187,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_style_pad_all(container_, 0, 0);
     lv_obj_set_style_border_width(container_, 0, 0);
     lv_obj_set_style_pad_row(container_, 0, 0);
+    lv_obj_remove_flag(container_, LV_OBJ_FLAG_SCROLLABLE);
 
     /* Layer 1: Top bar - for status icons */
     top_bar_ = lv_obj_create(container_);
@@ -199,6 +200,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_flex_align(top_bar_, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER,
                           LV_FLEX_ALIGN_CENTER);
     lv_obj_set_scrollbar_mode(top_bar_, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_remove_flag(top_bar_, LV_OBJ_FLAG_SCROLLABLE);
 
     network_label_ = lv_label_create(top_bar_);
     lv_label_set_text(network_label_, "");
@@ -212,6 +214,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_flex_flow(right_icons, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(right_icons, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER,
                           LV_FLEX_ALIGN_CENTER);
+    lv_obj_remove_flag(right_icons, LV_OBJ_FLAG_SCROLLABLE);
 
     mute_label_ = lv_label_create(right_icons);
     lv_label_set_text(mute_label_, "");
@@ -235,6 +238,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_scrollbar_mode(status_bar_, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_layout(status_bar_, LV_LAYOUT_NONE, 0);  // Use absolute positioning
     lv_obj_align(status_bar_, LV_ALIGN_TOP_MID, 0, 0);        // Overlap with top_bar_
+    lv_obj_remove_flag(status_bar_, LV_OBJ_FLAG_SCROLLABLE);
 
     notification_label_ = lv_label_create(status_bar_);
     lv_obj_set_size(notification_label_, LV_HOR_RES * 0.7, 16);
@@ -260,11 +264,13 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_flex_grow(content_, 1);
     lv_obj_set_flex_flow(content_, LV_FLEX_FLOW_ROW);
     lv_obj_set_style_flex_main_place(content_, LV_FLEX_ALIGN_CENTER, 0);
+    lv_obj_remove_flag(content_, LV_OBJ_FLAG_SCROLLABLE);
 
     content_left_ = lv_obj_create(content_);
     lv_obj_set_size(content_left_, 32, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_all(content_left_, 0, 0);
     lv_obj_set_style_border_width(content_left_, 0, 0);
+    lv_obj_remove_flag(content_left_, LV_OBJ_FLAG_SCROLLABLE);
 
     emotion_label_ = lv_label_create(content_left_);
     lv_obj_set_style_text_font(emotion_label_, large_icon_font, 0);
@@ -278,6 +284,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_style_border_width(content_right_, 0, 0);
     lv_obj_set_flex_grow(content_right_, 1);
     lv_obj_add_flag(content_right_, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(content_right_, LV_OBJ_FLAG_SCROLLABLE);
 
     chat_message_label_ = lv_label_create(content_right_);
     lv_label_set_text(chat_message_label_, "");
@@ -286,21 +293,13 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_width(chat_message_label_, width_ - 32);
     lv_obj_set_style_pad_top(chat_message_label_, 14, 0);
 
-    // Start scrolling subtitle after a delay
-    static lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_delay(&a, 1000);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_obj_set_style_anim(chat_message_label_, &a, LV_PART_MAIN);
-    lv_obj_set_style_anim_duration(chat_message_label_, lv_anim_speed_clamped(60, 300, 60000),
-                                   LV_PART_MAIN);
-
     low_battery_popup_ = lv_obj_create(screen);
     lv_obj_set_scrollbar_mode(low_battery_popup_, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_size(low_battery_popup_, LV_HOR_RES * 0.9, text_font->line_height * 2);
     lv_obj_align(low_battery_popup_, LV_ALIGN_BOTTOM_MID, 0, 0);
     lv_obj_set_style_bg_color(low_battery_popup_, lv_color_black(), 0);
     lv_obj_set_style_radius(low_battery_popup_, 10, 0);
+    lv_obj_remove_flag(low_battery_popup_, LV_OBJ_FLAG_SCROLLABLE);
     low_battery_label_ = lv_label_create(low_battery_popup_);
     lv_label_set_text(low_battery_label_, Lang::Strings::BATTERY_NEED_CHARGE);
     lv_obj_set_style_text_color(low_battery_label_, lv_color_white(), 0);
@@ -326,11 +325,13 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_pad_all(container_, 0, 0);
     lv_obj_set_style_border_width(container_, 0, 0);
     lv_obj_set_style_pad_column(container_, 0, 0);
+    lv_obj_remove_flag(container_, LV_OBJ_FLAG_SCROLLABLE);
 
     /* Emotion label on the left side */
     content_ = lv_obj_create(container_);
     // lv_obj_set_size(content_, 32, 32);
     lv_obj_set_size(content_, 0, 0);
+    lv_obj_remove_flag(content_, LV_OBJ_FLAG_SCROLLABLE);
     // lv_obj_set_style_pad_all(content_, 0, 0);
     // lv_obj_set_style_border_width(content_, 0, 0);
     // lv_obj_set_style_radius(content_, 0, 0);
@@ -348,6 +349,7 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_border_width(side_bar_, 0, 0);
     lv_obj_set_style_radius(side_bar_, 0, 0);
     lv_obj_set_style_pad_row(side_bar_, 0, 0);
+    lv_obj_remove_flag(side_bar_, LV_OBJ_FLAG_SCROLLABLE);
 
     /* Status bar */
     status_bar_ = lv_obj_create(side_bar_);
@@ -357,6 +359,8 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_pad_all(status_bar_, 0, 0);
     lv_obj_set_style_border_width(status_bar_, 0, 0);
     lv_obj_set_style_pad_column(status_bar_, 0, 0);
+    lv_obj_set_scrollbar_mode(status_bar_, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_remove_flag(status_bar_, LV_OBJ_FLAG_SCROLLABLE);
 
     status_label_ = lv_label_create(status_bar_);
     lv_obj_set_flex_grow(status_label_, 1);
@@ -390,21 +394,10 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_text_font(sensor_label_, text_font, 0);
 
     chat_message_label_ = lv_label_create(side_bar_);
-    lv_obj_set_size(
-        chat_message_label_, width_,
-        LV_SIZE_CONTENT);  // lv_obj_set_size(chat_message_label_, width_ - 32, LV_SIZE_CONTENT);
+    lv_obj_set_size(chat_message_label_, width_, 16);
     lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
     lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_label_set_text(chat_message_label_, "");
-
-    // Start scrolling subtitle after a delay
-    static lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_delay(&a, 1000);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_obj_set_style_anim(chat_message_label_, &a, LV_PART_MAIN);
-    lv_obj_set_style_anim_duration(chat_message_label_, lv_anim_speed_clamped(60, 300, 60000),
-                                   LV_PART_MAIN);
 }
 
 void OledDisplay::SetEmotion(const char* emotion) {
