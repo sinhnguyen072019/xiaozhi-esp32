@@ -17,6 +17,7 @@ public:
     void OnPressDown(std::function<void()> callback);
     void OnPressUp(std::function<void()> callback);
     void OnLongPress(std::function<void()> callback);
+    void OnPressFor(uint32_t duration_ms, std::function<void()> callback);
     void OnClick(std::function<void()> callback);
     void OnDoubleClick(std::function<void()> callback);
     void OnMultipleClick(std::function<void()> callback, uint8_t click_count = 3);

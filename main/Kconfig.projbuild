@@ -13,6 +13,12 @@ config ENABLE_AUTO_OTA_UPGRADE
         If enabled, the device will automatically download and install new firmware versions on boot.
         Set to n (disabled by default) to prevent overriding custom firmware builds.
 
+config ENABLE_LAN_CHAT_SERVER
+    bool "Enable LAN Socket Chat Server"
+    default n
+    help
+        Enable lightweight single-client WebSocket/HTTP LAN chat server on port 8888 for silent messaging with chatbot.
+
 choice
     prompt "Flash Assets"
     default FLASH_DEFAULT_ASSETS if !USE_EMOTE_MESSAGE_STYLE

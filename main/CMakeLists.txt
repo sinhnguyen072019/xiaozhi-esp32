@@ -45,6 +45,10 @@ set(SOURCES "audio/audio_codec.cc"
             "font_inter_12.c"
             )
 
+if(CONFIG_ENABLE_LAN_CHAT_SERVER)
+    list(APPEND SOURCES "lan_chat_server.cc" "console_chat.cc")
+endif()
+
 set(INCLUDE_DIRS "." "display" "display/lvgl_display" "display/lvgl_display/jpg" "audio" "audio/demuxer" "protocols")
 
 # Add board common files

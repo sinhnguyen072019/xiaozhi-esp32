@@ -177,13 +177,12 @@ void WifiBoard::StartWifiConfigMode() {
     wifi_manager.StartConfigAp();
 
     // Show config prompt after a short delay
-    Application::GetInstance().Schedule([&wifi_manager]() {
+    Application::GetInstance().Schedule([this, &wifi_manager]() {
         std::string hint = Lang::Strings::CONNECT_TO_HOTSPOT;
         hint += wifi_manager.GetApSsid();
         hint += Lang::Strings::ACCESS_VIA_BROWSER;
         hint += wifi_manager.GetApWebUrl();
-
-        Application::GetInstance().Alert(Lang::Strings::WIFI_CONFIG_MODE, hint.c_str(), "gear",
+        Application::GetInstance().Alert("Config WiFi", hint.c_str(), "gear",
                                          Lang::Sounds::OGG_WIFICONFIG);
     });
 #elif CONFIG_USE_ESP_BLUFI_WIFI_PROVISIONING
@@ -212,7 +211,14 @@ void WifiBoard::StartWifiConfigMode() {
 
 void WifiBoard::EnterWifiConfigMode() {
     ESP_LOGI(TAG, "EnterWifiConfigMode called");
-    GetDisplay()->ShowNotification(Lang::Strings::ENTERING_WIFI_CONFIG_MODE);
+    auto& wifi = WifiManager::GetInstance();
+    if (wifi.IsConnected()) {
+        last_connected_ip_ = wifi.GetIpAddress();
+    } else {
+        last_connected_ip_.clear();
+    }
+
+    GetDisplay()->ShowNotification(Lang::Strings::WIFI_CONFIG_MODE);
 
     auto& app = Application::GetInstance();
     auto state = app.GetDeviceState();
@@ -255,6 +261,42 @@ void WifiBoard::EnterWifiConfigMode() {
     WifiManager::GetInstance().StopStation();
 
     StartWifiConfigMode();
+}
+
+void WifiBoard::ExitWifiConfigMode() {
+    if (!IsInWifiConfigMode()) {
+        return;
+    }
+    ESP_LOGI(TAG, "ExitWifiConfigMode called");
+
+#ifdef CONFIG_USE_HOTSPOT_WIFI_PROVISIONING
+    WifiManager::GetInstance().StopConfigAp();
+#elif CONFIG_USE_ESP_BLUFI_WIFI_PROVISIONING
+    Blufi::GetInstance().deinit();
+#endif
+
+    in_config_mode_ = false;
+    last_connected_ip_.clear();
+    Application::GetInstance().DismissAlert();
+    Application::GetInstance().SetDeviceState(kDeviceStateStarting);
+    TryWifiConnect();
+}
+
+void WifiBoard::SetupBootButtonWifiConfig(Button& boot_button, std::function<void()> default_click_cb) {
+    boot_button.OnClick([this, default_click_cb]() {
+        if (IsInWifiConfigMode()) {
+            ExitWifiConfigMode();
+            return;
+        }
+        if (default_click_cb) {
+            default_click_cb();
+        }
+    });
+
+    boot_button.OnPressFor(15000, [this]() {
+        ESP_LOGI(TAG, "Boot button pressed for 15s -> Entering WiFi Config Mode");
+        EnterWifiConfigMode();
+    });
 }
 
 bool WifiBoard::IsInWifiConfigMode() const { return WifiManager::GetInstance().IsConfigMode(); }

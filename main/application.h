@@ -107,6 +107,10 @@ public:
 
     void Reboot();
     void WakeWordInvoke(const std::string& wake_word);
+    void SendTextMessage(const std::string& text);
+    void SetChatMessageCallback(std::function<void(const std::string& role, const std::string& text)> callback) {
+        chat_message_callback_ = callback;
+    }
     bool UpgradeFirmware(const std::string& url, const std::string& version = "");
     bool CanEnterSleepMode();
     void SendMcpMessage(const std::string& payload);
@@ -140,6 +144,7 @@ private:
     std::unique_ptr<Ota> ota_;
 
     std::function<void(const std::string&)> mcp_broadcast_callback_;
+    std::function<void(const std::string& role, const std::string& text)> chat_message_callback_;
 
     bool has_server_time_ = false;
     bool aborted_ = false;

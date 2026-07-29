@@ -11,6 +11,9 @@
 #include "system_info.h"
 #include "text_glyph_payload.h"
 #include "websocket_protocol.h"
+#if CONFIG_ENABLE_LAN_CHAT_SERVER
+#include "lan_chat_server.h"
+#endif
 
 #include <driver/gpio.h>
 #include <esp_log.h>
@@ -100,6 +103,13 @@ void Application::Initialize() {
     auto& mcp_server = McpServer::GetInstance();
     mcp_server.AddCommonTools();
     mcp_server.AddUserOnlyTools();
+
+#if CONFIG_ENABLE_LAN_CHAT_SERVER
+    // Register chat message callback for LAN chat server & UI
+    SetChatMessageCallback([](const std::string& role, const std::string& text) {
+        LanChatServer::GetInstance().OnChatMessage(role, text);
+    });
+#endif
 
     // Set network event callback for UI updates and network state handling
     board.SetNetworkEventCallback([this](NetworkEvent event, const std::string& data) {
@@ -300,6 +310,11 @@ void Application::HandleNetworkConnectedEvent() {
     // Update the status bar immediately to show the network state
     auto display = Board::GetInstance().GetDisplay();
     display->UpdateStatusBar(true);
+
+#if CONFIG_ENABLE_LAN_CHAT_SERVER
+    // Start LAN Chat Server on port 8888
+    LanChatServer::GetInstance().Start(8888);
+#endif
 }
 
 void Application::HandleNetworkDisconnectedEvent() {
@@ -583,6 +598,9 @@ void Application::InitializeProtocol() {
                         glyphs.clear();
                     }
                     ESP_LOGI(TAG, "<< %s", text->valuestring);
+                    if (chat_message_callback_) {
+                        chat_message_callback_("assistant", text->valuestring);
+                    }
                     Schedule([display, message = std::string(text->valuestring),
                               glyphs = std::move(glyphs), bpp]() {
                         display->AddTextGlyphs(glyphs, bpp);
@@ -599,6 +617,9 @@ void Application::InitializeProtocol() {
                     glyphs.clear();
                 }
                 ESP_LOGI(TAG, ">> %s", text->valuestring);
+                if (chat_message_callback_) {
+                    chat_message_callback_("user", text->valuestring);
+                }
                 Schedule([display, message = std::string(text->valuestring),
                           glyphs = std::move(glyphs), bpp]() {
                     display->AddTextGlyphs(glyphs, bpp);
@@ -1196,5 +1217,40 @@ void Application::ResetProtocol() {
         }
         // Reset protocol
         protocol_.reset();
+    });
+}
+
+void Application::SendTextMessage(const std::string& text) {
+    if (text.empty()) return;
+    ESP_LOGI(TAG, "SendTextMessage: %s", text.c_str());
+    Schedule([this, text]() {
+        if (chat_message_callback_) {
+            chat_message_callback_("user", text);
+        }
+
+        auto state = GetDeviceState();
+        if (state == kDeviceStateSpeaking) {
+            AbortSpeaking(kAbortReasonNone);
+        } else if (state == kDeviceStateListening) {
+            // Clear send queue to avoid sending residues to server
+            while (audio_service_.PopPacketFromSendQueue())
+                ;
+            audio_service_.EnableVoiceProcessing(false);
+            SetDeviceState(kDeviceStateIdle);
+        }
+
+        auto display = Board::GetInstance().GetDisplay();
+        display->SetChatMessage("user", text.c_str());
+
+        if (!protocol_->IsAudioChannelOpened()) {
+            if (!protocol_->OpenAudioChannel()) {
+                ESP_LOGE(TAG, "Failed to open audio channel for text message");
+                SetDeviceState(kDeviceStateIdle);
+                return;
+            }
+        }
+
+        // Send custom chat message directly instead of WakeWord trigger
+        protocol_->SendChatMessage(text);
     });
 }

@@ -97,6 +97,13 @@ void Protocol::SendMcpMessage(const std::string& payload) {
     SendText(message);
 }
 
+void Protocol::SendChatMessage(const std::string& text) {
+    // Send standard text chat event to the backend if supported
+    std::string message =
+        "{\"session_id\":\"" + session_id_ + "\",\"type\":\"chat\",\"text\":\"" + text + "\"}";
+    SendText(message);
+}
+
 bool Protocol::IsTimeout() const {
     const int kTimeoutSeconds = 120;
     auto now = std::chrono::steady_clock::now();

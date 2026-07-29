@@ -127,7 +127,7 @@ private:
     }
 
     void InitializeButtons() {
-        boot_button_.OnClick([this]() {
+        SetupBootButtonWifiConfig(boot_button_, [this]() {
             auto& app = Application::GetInstance();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();

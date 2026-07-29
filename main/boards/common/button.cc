@@ -2,6 +2,7 @@
 
 #include <button_gpio.h>
 #include <esp_log.h>
+#include <esp_timer.h>
 
 #define TAG "Button"
 
@@ -122,4 +123,44 @@ void Button::OnMultipleClick(std::function<void()> callback, uint8_t click_count
             button->on_multiple_click_();
         }
     }, this);
+}
+
+struct ButtonPressForCtx {
+    esp_timer_handle_t timer = nullptr;
+    std::function<void()> callback;
+};
+
+void Button::OnPressFor(uint32_t duration_ms, std::function<void()> callback) {
+    if (button_handle_ == nullptr) {
+        return;
+    }
+    auto ctx = new ButtonPressForCtx();
+    ctx->callback = callback;
+
+    esp_timer_create_args_t timer_args = {
+        .callback = [](void* arg) {
+            auto* c = static_cast<ButtonPressForCtx*>(arg);
+            if (c && c->callback) {
+                c->callback();
+            }
+        },
+        .arg = ctx,
+        .dispatch_method = ESP_TIMER_TASK,
+        .name = "btn_press_for",
+        .skip_unhandled_events = true
+    };
+    esp_timer_create(&timer_args, &ctx->timer);
+
+    OnPressDown([ctx, duration_ms]() {
+        if (ctx->timer) {
+            esp_timer_stop(ctx->timer);
+            esp_timer_start_once(ctx->timer, static_cast<uint64_t>(duration_ms) * 1000ULL);
+        }
+    });
+
+    OnPressUp([ctx]() {
+        if (ctx->timer) {
+            esp_timer_stop(ctx->timer);
+        }
+    });
 }

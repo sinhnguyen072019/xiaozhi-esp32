@@ -290,7 +290,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_label_set_text(chat_message_label_, "");
     lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_set_style_text_align(chat_message_label_, LV_TEXT_ALIGN_LEFT, 0);
-    lv_obj_set_width(chat_message_label_, width_ - 32);
+    lv_obj_set_size(chat_message_label_, width_ - 32, 48);
     lv_obj_set_style_pad_top(chat_message_label_, 14, 0);
 
     low_battery_popup_ = lv_obj_create(screen);
