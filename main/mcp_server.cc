@@ -172,9 +172,9 @@ void McpServer::AddCommonTools() {
     AddTool("self.special_days.add",
             "Add or update a custom special day with a greeting message. Note: Hardcoded default days (readonly) cannot be modified.",
             PropertyList({
-                Property("month", kPropertyTypeInt, "The month of the special day (1-12, where 1 is January)"),
-                Property("day", kPropertyTypeInt, "The day of the month (1-31)"),
-                Property("greeting", kPropertyTypeString, "The congratulatory or greeting message to display on this day")
+                Property("month", kPropertyTypeInteger, 1, 12),
+                Property("day", kPropertyTypeInteger, 1, 31),
+                Property("greeting", kPropertyTypeString)
             }),
             [](const PropertyList& properties) -> ReturnValue {
                 int month = properties["month"].value<int>();
@@ -187,8 +187,8 @@ void McpServer::AddCommonTools() {
     AddTool("self.special_days.remove",
             "Remove a custom special day from the device configuration. Note: Hardcoded default days (readonly) cannot be removed.",
             PropertyList({
-                Property("month", kPropertyTypeInt, "The month of the special day (1-12, where 1 is January)"),
-                Property("day", kPropertyTypeInt, "The day of the month (1-31)")
+                Property("month", kPropertyTypeInteger, 1, 12),
+                Property("day", kPropertyTypeInteger, 1, 31)
             }),
             [](const PropertyList& properties) -> ReturnValue {
                 int month = properties["month"].value<int>();

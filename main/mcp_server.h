@@ -9,6 +9,7 @@
 #include <optional>
 #include <stdexcept>
 #include <thread>
+#include <initializer_list>
 #include <mbedtls/base64.h>
 
 #include <cJSON.h>
@@ -162,6 +163,7 @@ private:
 public:
     PropertyList() = default;
     PropertyList(const std::vector<Property>& properties) : properties_(properties) {}
+    PropertyList(std::initializer_list<Property> properties) : properties_(properties) {}
     void AddProperty(const Property& property) {
         properties_.push_back(property);
     }
