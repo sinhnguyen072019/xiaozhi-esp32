@@ -25,7 +25,6 @@ inline const SpecialDay SPECIAL_DAYS[] = {
     {4, 1, "Mừng Ngày Quốc tế Lao động 1/5!"},   // 1/5: Quốc tế Lao động
     {5, 1, "Mừng Ngày Quốc tế Thiếu nhi 1/6!"},  // 1/6: Quốc tế Thiếu nhi
     {6, 23, " ^ ^ Đại hải trình"},               // 23/7 (gốc)
-    {6, 30, "Chúc mừng sinh nhật"},              // 30/7 (gốc)
     {8, 2, "Chúc mừng Quốc khánh 2/9! 🇻🇳"},      // 2/9: Quốc khánh
     {10, 20, "Chúc mừng Ngày Nhà giáo 20/11!"},  // 20/11: Ngày Nhà giáo Việt Nam
     {11, 24, "Chúc mừng Giáng sinh! 🎄"},        // 24/12: Giáng sinh

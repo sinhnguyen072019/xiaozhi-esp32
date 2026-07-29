@@ -287,11 +287,11 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_remove_flag(content_right_, LV_OBJ_FLAG_SCROLLABLE);
 
     chat_message_label_ = lv_label_create(content_right_);
-    lv_label_set_text(chat_message_label_, "");
     lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_WRAP);
-    lv_obj_set_style_text_align(chat_message_label_, LV_TEXT_ALIGN_LEFT, 0);
+    lv_label_set_text(chat_message_label_, "");
     lv_obj_set_size(chat_message_label_, width_ - 32, 48);
     lv_obj_set_style_pad_top(chat_message_label_, 14, 0);
+    lv_obj_set_style_text_align(chat_message_label_, LV_TEXT_ALIGN_LEFT, 0);
 
     low_battery_popup_ = lv_obj_create(screen);
     lv_obj_set_scrollbar_mode(low_battery_popup_, LV_SCROLLBAR_MODE_OFF);
@@ -394,9 +394,9 @@ void OledDisplay::SetupUI_128x32() {
     lv_obj_set_style_text_font(sensor_label_, text_font, 0);
 
     chat_message_label_ = lv_label_create(side_bar_);
-    lv_obj_set_size(chat_message_label_, width_, 16);
+    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_set_size(chat_message_label_, width_, 20);
     lv_obj_set_style_pad_left(chat_message_label_, 0, 0);
-    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_WRAP);
     lv_label_set_text(chat_message_label_, "");
 }
 
